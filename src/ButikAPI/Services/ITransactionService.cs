@@ -1,4 +1,5 @@
 ﻿using ButikAPI.Models;
+using ButikAPI.Models.CustomModels;
 using Microsoft.Extensions.Hosting;
 using System.Runtime.ConstrainedExecution;
 using static HotChocolate.ErrorCodes;
@@ -12,11 +13,11 @@ namespace ButikAPI.Services
         Task<IQueryable<Product>> TenBestSellingProductsPerMonth(int? month);
 
         //Untuk menampilkan data nominal penjualan setiap cabang dalam 1 tahun.
-        Task<IQueryable<Transaction>> TotalSalesPerYear(DateTime? startDate, DateTime? endDate);
+        Task<IQueryable<TotalSalesPerYearCustomModel>> TotalSalesPerYear(int? year);
         //Untuk menampilkan 5 data pakaian yang mengalami peningkatan tertinggi
         //penjualan dalam bulan ini dibandingkan bulan sebelumnya. Dengan cara
         //membandingkan quantity yg terjual bulan ini dengan quantity yang terjual
         //bulan sebelumnya.
-        Task<IQueryable<Product>> FiveSalesIncreasePerMonth(DateTime? startDate, DateTime? endDate);
+        Task<IQueryable<TopFiveProduct>> FiveSalesIncreasePerMonth();
     }
 }

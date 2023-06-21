@@ -7,8 +7,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["ButikAPI/ButikAPI.csproj", "ButikAPI/"]
-RUN dotnet restore "ButikAPI/ButikAPI.csproj"
+COPY ["ButikAPI.csproj", "./"]
+RUN dotnet restore "./ButikAPI.csproj"
 COPY . .
 WORKDIR "/src/ButikAPI"
 RUN dotnet build "ButikAPI.csproj" -c Release -o /app/build

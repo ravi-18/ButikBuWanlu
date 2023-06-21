@@ -4,13 +4,11 @@ using ButikAPI.GraphQL.Queries;
 using ButikAPI.Services;
 using ButikAPI.Services.Implementation;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -21,12 +19,12 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
-builder.Services.AddGraphQLServer().AddQueryType<BranchQuery>();
-builder.Services.AddGraphQLServer().AddQueryType<CustomerQuery>();
-builder.Services.AddGraphQLServer().AddQueryType<ProductQuery>();
-builder.Services.AddGraphQLServer().AddQueryType<TransactionQuery>();
-
-builder.Services.AddGraphQLServer().AddMutationType<TransactionMutation>();
+builder.Services.AddGraphQLServer()
+    .AddQueryType<Query>()
+    //.AddMutationType<MutationType>()
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting();
 
 var app = builder.Build();
 
