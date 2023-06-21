@@ -112,7 +112,7 @@ namespace ButikAPI.GraphQL.Queries
         }
 
         [GraphQLMetadata("tenMostBuyersPerMonth")]
-        Task<IQueryable<TopMostBuyers>> TenMostBuyersPerMonth(int? month,
+        public Task<IQueryable<TopMostBuyers>> TenMostBuyersPerMonth(int? month,
             [Service]
             ICustomerService service)
         {
