@@ -10,7 +10,7 @@ Api untuk butik bu wanlu
 
 ### note:
 * Jika runing dengan docker terdapat error maka bisa melakukan runing tanpa docker dengan memilih execute "ButikAPI" dan sesuaikan untuk connectionString yang ada pada appsetting.json
-* Untuk CRUD data terdapat pada endpoint swagger. jika api telah run bisa switch ke enpoin swagger.   
+* Untuk CRUD data terdapat pada endpoint swagger. jika api telah run bisa switch ke endpoint swagger.   
 
 ## Insert data
 Untuk insert data tidak dapat dilakukan sekali execute query karena data dalam satu kali execute query di sql server maksimum 1000 data. Sehingga untuk execute bisa di split 1000 data.
