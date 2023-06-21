@@ -95,5 +95,29 @@ namespace ButikAPI.GraphQL.Queries
             return await service.FiveSalesIncreasePerMonth();
         }
 
+        [GraphQLMetadata("newCustomer")]
+        public async Task<Customer> NewCustomer(
+            [Service]
+            ICustomerService service)
+        {
+            return await service.NewCustomer();
+        }
+
+        [GraphQLMetadata("oldCustomer")]
+        public async Task<Customer> OldCustomer(
+            [Service]
+            ICustomerService service)
+        {
+            return await service.OldCustomer();
+        }
+
+        [GraphQLMetadata("tenMostBuyersPerMonth")]
+        Task<IQueryable<TopMostBuyers>> TenMostBuyersPerMonth(int? month,
+            [Service]
+            ICustomerService service)
+        {
+            return service.TenMostBuyersPerMonth(month);
+        }
+
     }
 }

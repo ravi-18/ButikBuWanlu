@@ -7,6 +7,8 @@ Api untuk butik bu wanlu
 - jika menggunakan visual studio code bisa menggunakan perintah ```dotnet ef database update``` pada console, untuk memunculkannya bisa menekan kombinasi ```ctrl + ` ```
 - dalam console ketikan ```docker-compose up``` untuk membuat docker image
 - lalu jalankan docker dengan memilih execute docker jika dalam visual studio lalu tekan F5, jika menggunakan visual studio code ```docker-compose build```
+
+*Jika runing dengan docker terdapat error maka bisa melakukan runing tanpa docker dengan memilih execute "ButikAPI" dan sesuaikan untuk connectionString yang ada pada appsetting.json
    
 
 ## Insert data

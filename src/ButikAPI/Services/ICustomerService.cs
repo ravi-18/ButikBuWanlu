@@ -1,4 +1,5 @@
 ﻿using ButikAPI.Models;
+using ButikAPI.Models.CustomModels;
 using static HotChocolate.ErrorCodes;
 
 namespace ButikAPI.Services
@@ -13,6 +14,6 @@ namespace ButikAPI.Services
 
         //Untuk menampilkan 10 data pelanggan yang paling besar belanjanya dalam
         //1 bulan di setiap cabang(berdasarkan akumulasi total belanja).
-        Task<IQueryable<Customer>> TenMostBuyersPerMonth();
+        Task<IQueryable<TopMostBuyers>> TenMostBuyersPerMonth(int? month);
     }
 }
