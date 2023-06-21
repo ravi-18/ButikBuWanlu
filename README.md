@@ -34,6 +34,8 @@ query{
   price
  }
 }
+```
+```
 query {
   productLowestPrice {
     id
