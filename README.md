@@ -1,7 +1,7 @@
 # ButikBuWanlu
 Api untuk butik bu wanlu
 
-[Tautan ke Revisi](##Revisi)
+[Tautan ke Revisi](#revisi)
 
 
 ## Test Runing
