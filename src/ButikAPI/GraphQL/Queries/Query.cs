@@ -3,6 +3,7 @@ using ButikAPI.Models;
 using ButikAPI.Models.CustomModels;
 using ButikAPI.Services;
 using GraphQL;
+using Microsoft.EntityFrameworkCore;
 
 namespace ButikAPI.GraphQL.Queries
 {
@@ -31,7 +32,7 @@ namespace ButikAPI.GraphQL.Queries
         [UseFiltering]
         [UseSorting]
         [GraphQLMetadata("customer")]
-        public IQueryable<Customer> Customer([Service] ApplicationDbContext context) => context.Customers.OrderBy(e => e.RegistrationDate).ThenBy(e => e.Name).AsQueryable();
+        public IQueryable<Customer> Customer([Service] ApplicationDbContext context) => context.Customers.Include(e => e.Branch).OrderBy(e => e.RegistrationDate).ThenBy(e => e.Name).AsQueryable();
 
         /// <summary>
         /// Transaction.
@@ -42,7 +43,7 @@ namespace ButikAPI.GraphQL.Queries
         [UseFiltering]
         [UseSorting]
         [GraphQLMetadata("transcation")]
-        public IQueryable<Transaction> Transaction([Service] ApplicationDbContext context) => context.Transactions.OrderBy(e => e.TransactionDate).ThenBy(e => e.Quantity).AsQueryable();
+        public IQueryable<Transaction> Transaction([Service] ApplicationDbContext context) => context.Transactions.Include(e => e.Product).Include(e => e.Customer).ThenInclude(e => e.Branch).OrderBy(e => e.TransactionDate).ThenBy(e => e.Quantity).AsQueryable();
 
         /// <summary>
         /// Product.
@@ -53,7 +54,7 @@ namespace ButikAPI.GraphQL.Queries
         [UseFiltering]
         [UseSorting]
         [GraphQLMetadata("product")]
-        public IQueryable<Product> Product([Service] ApplicationDbContext context) => context.Products.OrderBy(e => e.Name).ThenBy(e => e.Price).AsQueryable();
+        public IQueryable<Product> Product([Service] ApplicationDbContext context) => context.Products.Include(e => e.Transactions).OrderBy(e => e.Name).ThenBy(e => e.Price).AsQueryable();
 
         /// <summary>
         /// Ten Best Seller.

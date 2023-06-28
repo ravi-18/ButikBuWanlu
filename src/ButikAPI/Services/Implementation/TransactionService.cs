@@ -111,38 +111,52 @@
         /// <inheritdoc/>
         public async Task<IQueryable<TopFiveProduct>> FiveSalesIncreasePerMonth()
         {
-            DateTime currentDate = DateTime.Now;
-            DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1);
-            DateTime previousMonthStartDate = currentMonthStartDate.AddMonths(-1);
-            DateTime previousMonthEndDate = currentMonthStartDate.AddDays(-1);
+            try
+            {
 
-            var top5Products = (from t1 in this.context.Transactions
-                                 join t2 in this.context.Transactions on t1.ProductId equals t2.ProductId
-                                 where 
-                                 t1.TransactionDate >= previousMonthStartDate &&
-                                 t1.TransactionDate <= previousMonthEndDate &&
-                                 t2.TransactionDate >= currentMonthStartDate &&
-                                 t2.TransactionDate <= currentDate
-                                 group new { t1.ProductId, Quantity1 = t1.Quantity, Quantity2 = t2.Quantity } by t1.ProductId into g
-                                 let previousMonthQuantity = g.Sum(x => x.Quantity1)
-                                 let currentMonthQuantity = g.Sum(x => x.Quantity2)
-                                 select new
-                                 {
-                                     ProductId = g.Key,
-                                     QuantityIncrease = currentMonthQuantity - previousMonthQuantity,
-                                 }).OrderByDescending(x => x.QuantityIncrease).Take(5);
+                DateTime currentDate = DateTime.Now;
+                DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+                DateTime previousMonthStartDate = currentMonthStartDate.AddMonths(-1);
+                DateTime previousMonthEndDate = currentMonthStartDate.AddDays(-1);
 
-            // Retrieve the actual product details
-            var products = await (from p in this.context.Products
-                           join t in top5Products on p.Id equals t.ProductId
-                           select new TopFiveProduct
-                           {
-                               Id = p.Id,
-                               Name = p.Name,
-                               Price = p.Price,
-                               QuantityIncrease = t.QuantityIncrease,
-                           }).OrderBy(e => e.QuantityIncrease).ThenBy(e => e.Price).ThenBy(e => e.Name).ToListAsync();
-            return products.AsQueryable();
+                var previousTransactions = await this.context.Transactions.Where(e => e.TransactionDate >= previousMonthStartDate && e.TransactionDate <= previousMonthEndDate).ToListAsync();
+
+                var currentTransactions = await this.context.Transactions.Where(e => e.TransactionDate >= currentMonthStartDate && e.TransactionDate <= currentDate).ToListAsync();
+
+                var top5Products = (from t1 in previousTransactions
+                                    join t2 in currentTransactions on t1.ProductId equals t2.ProductId
+                                    where
+                                        t1.TransactionDate >= previousMonthStartDate &&
+                                        t1.TransactionDate <= previousMonthEndDate &&
+                                        t2.TransactionDate >= currentMonthStartDate &&
+                                        t2.TransactionDate <= currentDate
+                                    group new { t1.ProductId, Quantity1 = t1.Quantity, Quantity2 = t2.Quantity } by t1.ProductId into g
+                                    let previousMonthQuantity = g.Sum(x => x.Quantity1)
+                                    let currentMonthQuantity = g.Sum(x => x.Quantity2)
+                                    select new GetDataTopFive
+                                    {
+                                        ProductId = g.Key,
+                                        QuantityIncrease = currentMonthQuantity - previousMonthQuantity,
+                                    }).OrderByDescending(x => x.QuantityIncrease).Take(5);
+
+                var products = await this.context.Products.Where(e => top5Products.Select(s => s.ProductId).Contains(e.Id)).ToListAsync();
+                
+                // Retrieve the actual product details
+                var result = (from p in products
+                                join t in top5Products on p.Id equals t.ProductId.Value
+                                select new TopFiveProduct
+                                {
+                                    Id = p.Id,
+                                    Name = p.Name,
+                                    Price = p.Price,
+                                    QuantityIncrease = t.QuantityIncrease.Value,
+                                }).OrderByDescending(e => e.QuantityIncrease).ThenBy(e => e.Price).ThenBy(e => e.Name);//.ToListAsync();
+                return result.AsQueryable();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
         }
 
         /// <inheritdoc/>
@@ -162,6 +176,7 @@
         }
 
         // Untuk menampilkan data nominal penjualan setiap cabang dalam 1 tahun.
+        // Sempat error karena limitasi integer, dan solve ketika di parse ke long.
 
         /// <inheritdoc/>
         public async Task<IQueryable<TotalSalesPerYearCustomModel>> TotalSalesPerYear(int? year)
@@ -180,7 +195,7 @@
                                          select new TotalSalesPerYearCustomModel
                                          {
                                              BranchName = g.Key,
-                                             TotalSales = g.Sum(x => x.Price * x.Quantity),
+                                             TotalSales = g.Sum(x => (long)x.Price * (long)x.Quantity),
                                          }).OrderBy(e => e.TotalSales).ThenBy(e => e.BranchName).ToListAsync();
             return nominalpertahun.AsQueryable();
         }

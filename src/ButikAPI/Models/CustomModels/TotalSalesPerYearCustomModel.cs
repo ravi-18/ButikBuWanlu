@@ -13,6 +13,6 @@
         /// <summary>
         /// Gets or sets total Sales.
         /// </summary>
-        public int TotalSales { get; set; }
+        public long TotalSales { get; set; }
     }
 }
