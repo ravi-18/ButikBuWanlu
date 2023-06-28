@@ -21,7 +21,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<Query>()
-    //.AddMutationType<MutationType>()
+    .AddMutationType<Mutation>()
     .AddProjections()
     .AddFiltering()
     .AddSorting();
@@ -40,6 +40,13 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+});
 
 app.MapGraphQL("/graphql");
 

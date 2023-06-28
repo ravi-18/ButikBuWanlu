@@ -23,13 +23,28 @@ namespace ButikAPI.Controllers
 
         // GET: api/Transactions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions(int? pageNumber, int? pageSize)
         {
-          if (_context.Transactions == null)
-          {
-              return NotFound();
-          }
-            return await _context.Transactions.ToListAsync();
+            if (_context.Transactions == null)
+            {
+                return NotFound();
+            }
+
+            if (pageNumber == null)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize == null)
+            {
+                pageSize = 20;
+            }
+
+            var transactions = await _context.Transactions
+                .Skip((pageNumber.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value)
+                .ToListAsync();
+            return transactions;
         }
 
         // GET: api/Transactions/5

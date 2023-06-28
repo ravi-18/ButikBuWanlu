@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ButikAPI.Data;
 using ButikAPI.Models;
+using System.Drawing.Printing;
 
 namespace ButikAPI.Controllers
 {
@@ -23,13 +24,29 @@ namespace ButikAPI.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers(int? pageNumber, int? pageSize)
         {
           if (_context.Customers == null)
           {
               return NotFound();
           }
-            return await _context.Customers.ToListAsync();
+
+            if (pageNumber == null)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize == null)
+            {
+                pageSize = 20;
+            }
+
+            var customers = await _context.Customers
+                .Skip((pageNumber.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value)
+                .ToListAsync();
+
+            return customers;
         }
 
         // GET: api/Customers/5

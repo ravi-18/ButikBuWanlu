@@ -6,6 +6,7 @@ namespace ButikAPI.Services.Implementation
 {
     using ButikAPI.Data;
     using ButikAPI.Models;
+    using ButikAPI.Models.CustomModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -25,13 +26,15 @@ namespace ButikAPI.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<Branch> Create(Branch branch)
+        public async Task<Branch> Create(BranchRegisterInput input)
         {
             try
             {
-                if (branch != null)
+                var branch = new Branch();
+                if (!string.IsNullOrEmpty(input.Name))
                 {
                     branch.Id = Guid.NewGuid();
+                    branch.Name = input.Name;
                     this.context.Add(branch);
                     await this.context.SaveChangesAsync();
                 }
@@ -45,7 +48,33 @@ namespace ButikAPI.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<bool> DeleteById(Guid id)
+        public async Task<Branch> Modify(BranchModifyInput input)
+        {
+            try
+            {
+                var branch = await this.context.Branches.FirstOrDefaultAsync(e => e.Id.Equals(input.Id));
+                if (branch != null)
+                {
+                    branch.Name = input.Name;
+
+                    this.context.Update(branch);
+                    var hasChanges = this.context.ChangeTracker.HasChanges();
+                    if (hasChanges)
+                    {
+                        await this.context.SaveChangesAsync();
+                    }
+                }
+
+                return branch;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<DeleteResponse> DeleteById(Guid id)
         {
             try
             {
@@ -54,10 +83,12 @@ namespace ButikAPI.Services.Implementation
                 {
                     this.context.Branches.Remove(branch);
                     await this.context.SaveChangesAsync();
-                    return true;
+                    return new DeleteResponse() { Value = true, Message = "Berhasil Delete Branch", };
                 }
-
-                return false;
+                else
+                {
+                    return new DeleteResponse() { Value = false, Message = "Gagal Delete Branch", };
+                }
             }
             catch (Exception ex)
             {
@@ -74,28 +105,32 @@ namespace ButikAPI.Services.Implementation
         /// <inheritdoc/>
         public async Task<IQueryable<Branch>> GetListAsync()
         {
-            return this.context.Branches;
+            return this.context.Branches.OrderBy(e => e.Name);
         }
 
-        /// <inheritdoc/>
-        public async Task<Branch> Update(Branch newBranch)
-        {
-            try
-            {
-                var oldBranch = await this.context.Branches.FirstOrDefaultAsync(e => e.Id.Equals(newBranch.Id));
-                if (oldBranch != null)
-                {
-                    this.context.Branches.Update(newBranch);
-                    await this.context.SaveChangesAsync();
-                    return newBranch;
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex.InnerException);
-            }
-        }
+        ///// <inheritdoc/>
+        // public async Task<Branch> Update(BranchModifyInput input)
+        // {
+        //    try
+        //    {
+        //        var branch = await this.context.Branches.FirstOrDefaultAsync(e => e.Id.Equals(input.Id));
+        //        if (branch != null)
+        //        {
+        //            branch.Name = input.Name;
+        //            this.context.Update(branch);
+        //            var hasChange = this.context.ChangeTracker.HasChanges();
+        //            if (hasChange)
+        //            {
+        //                await this.context.SaveChangesAsync();
+        //            }
+        //            return branch;
+        //        }
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message, ex.InnerException);
+        //    }
+        // }
     }
 }
