@@ -16,7 +16,8 @@ Api untuk butik bu wanlu
 * Untuk CRUD data terdapat pada endpoint swagger. jika api telah run bisa switch ke endpoint swagger.   
 
 ## Insert data
-Untuk insert data tidak dapat dilakukan sekali execute query karena data dalam satu kali execute query di sql server maksimum 1000 data. Sehingga untuk execute bisa di split 1000 data.
+Untuk insert data sudah diupdati bisa dilakuakn sekali execute setiap file nya.
+Jika tidak dapat dilakukan sekali execute, maka execute query maksimum setiap 1000 data. Sehingga untuk execute bisa di split 1000 data.
 caranya :
 - buka file sql yang akan di execute.
 - tekan ```ctrl + G``` lalu masukan 1000 
